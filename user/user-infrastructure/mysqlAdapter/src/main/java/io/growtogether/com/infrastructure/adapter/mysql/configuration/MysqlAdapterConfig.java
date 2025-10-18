@@ -13,7 +13,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @EnableJpaRepositories(basePackageClasses = {MysqlClientRepository.class})
 @AutoConfigurationPackage(basePackageClasses = ClientJpaEntity.class)
-@ComponentScan(basePackages = "io.growtogether.com.infrastructure.adapter.mysql.mapper")
+@ComponentScan(basePackageClasses = ClientEntityMapper.class)
 public class MysqlAdapterConfig {
 
     @Bean

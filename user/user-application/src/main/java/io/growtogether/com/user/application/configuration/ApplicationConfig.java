@@ -9,8 +9,7 @@ import static org.springframework.context.annotation.FilterType.ANNOTATION;
 @Configuration
 @ComponentScan(
         basePackages = {"io.growtogether.com.finbill.user",
-                "io.growtogether.com.user.application.controller",
-                "io.growtogether.com.user.application.mapper"},
+                "io.growtogether.com.user.application"},
         includeFilters = {@ComponentScan.Filter(type = ANNOTATION, classes = {DomainService.class})})
 public class ApplicationConfig {
 }

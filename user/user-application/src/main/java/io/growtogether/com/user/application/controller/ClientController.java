@@ -7,13 +7,15 @@ import io.growtogether.com.user.application.request.ClientRequest;
 import io.growtogether.com.user.application.response.ClientResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
+
+import static org.springframework.web.servlet.support.ServletUriComponentsBuilder.fromCurrentRequest;
 
 @RestController
 @RequestMapping("/api/clients")
@@ -38,9 +40,14 @@ public class ClientController {
     public ResponseEntity<String> createClient(@Validated @RequestBody ClientRequest clientRequest) {
         var client = clientDtoMapper.mapToClient(clientRequest);
         var createdClient = clientService.registerClient(client);
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(createdClient.toString());
+
+        URI location = fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(createdClient)
+                .toUri();
+        return ResponseEntity.created(location)
+                .contentType(MediaType.TEXT_HTML)
+                .body("Client created Successfully");
     }
 
     private static HttpHeaders getHttpHeaders(PaginatedResponse<ClientResponse> paginatedProduct) {
