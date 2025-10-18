@@ -10,14 +10,25 @@
     </parent>
 
     <artifactId>finbill-application</artifactId>
+    <packaging>war</packaging>
 
     <dependencies>
+        <!--  infrastructure-->
+        <dependency>
+            <groupId>io.growtogether.com</groupId>
+            <artifactId>infrastructure-mysqlAdapter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.growtogether.com</groupId>
+            <artifactId>user-application</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
-
     <build>
         <plugins>
             <plugin>
@@ -26,6 +37,4 @@
             </plugin>
         </plugins>
     </build>
-
-
 </project>
