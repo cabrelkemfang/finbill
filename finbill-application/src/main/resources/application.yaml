@@ -2,6 +2,13 @@ spring:
   application:
     name: finbill-application
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8085/realms/oauth-growtogether-realm
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
   datasource:
     url: jdbc:mysql://localhost:3306/finbill?useSSL=true&serverTimezone=UTC&&createDatabaseIfNotExist=true
     username: root
