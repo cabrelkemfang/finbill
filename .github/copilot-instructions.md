@@ -1,3 +1,6 @@
+---
+applyTo: '**'
+---
 # Copilot instructions
 
 ## Language Policy

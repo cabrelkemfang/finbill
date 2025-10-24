@@ -1,5 +1,6 @@
 package io.growtogether.com.finbill.user.domain.model;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
