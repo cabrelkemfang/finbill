@@ -27,6 +27,7 @@ public class ClientController {
     private final ClientDtoMapper clientDtoMapper;
 
     @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('client_admin')")
     public ResponseEntity<List<ClientResponse>> findClients(@RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
         var response = clientService.findClients(page, size);
@@ -38,7 +39,6 @@ public class ClientController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    @PreAuthorize("hasRole('client_admin')")
     public ResponseEntity<String> createClient(@Validated @RequestBody ClientRequest clientRequest) {
         var client = clientDtoMapper.mapToClient(clientRequest);
         var createdClient = clientService.registerClient(client);

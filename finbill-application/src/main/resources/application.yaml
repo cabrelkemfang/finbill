@@ -26,7 +26,10 @@ spring:
     open-in-view: false
     main:
       lazy-initialization: true
-
+jwt:
+  auth:
+    converter:
+      resource-id: aouth-growtogether-api-client
 server:
   port: 8080
 
