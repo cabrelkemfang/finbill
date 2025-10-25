@@ -21,8 +21,8 @@ class DomainClientService implements ClientService {
 
     @Override
     public UUID registerClient(Client client) {
-        if (clientRepositoryPort.existsByEmail(client.getEmail().email())) {
-            throw new EmailAlreadyExistsException(client.getEmail());
+        if (clientRepositoryPort.existsByEmail(client.emailAddress().email())) {
+            throw new EmailAlreadyExistsException(client.emailAddress());
         }
         return clientRepositoryPort.save(client);
     }

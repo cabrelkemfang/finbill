@@ -6,6 +6,7 @@ import io.growtogether.com.user.application.mapper.ClientDtoMapper;
 import io.growtogether.com.user.application.request.ClientRequest;
 import io.growtogether.com.user.application.response.ClientResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ import static org.springframework.web.servlet.support.ServletUriComponentsBuilde
 @RestController
 @RequestMapping("/api/clients")
 @RequiredArgsConstructor
+@Slf4j
 public class ClientController {
 
     private final ClientService clientService;
@@ -30,16 +32,18 @@ public class ClientController {
     @PreAuthorize("hasRole('client_admin')")
     public ResponseEntity<List<ClientResponse>> findClients(@RequestParam(defaultValue = "1") int page,
                                                             @RequestParam(defaultValue = "10") int size) {
-        var response = clientService.findClients(page, size);
-        var clientPaginatedResponse = clientDtoMapper.mapToPaginatedClientResponse(response);
+        log.info("Fetching clients - page: {}, size: {}", page, size);
+        var paginatedResponse = clientService.findClients(page, size);
+        var clientPaginatedResponse = clientDtoMapper.mapToPaginatedClientResponse(paginatedResponse);
         return ResponseEntity.ok()
-                .headers(getHttpHeaders(clientPaginatedResponse))
+                .headers(buildPaginatedResponse(clientPaginatedResponse))
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(clientPaginatedResponse.content());
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<String> createClient(@Validated @RequestBody ClientRequest clientRequest) {
+        log.info("Creating new client with email: {}", clientRequest.getEmail());
         var client = clientDtoMapper.mapToClient(clientRequest);
         var createdClient = clientService.registerClient(client);
 
@@ -48,11 +52,10 @@ public class ClientController {
                 .buildAndExpand(createdClient)
                 .toUri();
         return ResponseEntity.created(location)
-                .contentType(MediaType.TEXT_HTML)
-                .body("Client created Successfully");
+                .body("Client created successfully");
     }
 
-    private static HttpHeaders getHttpHeaders(PaginatedResponse<ClientResponse> paginatedProduct) {
+    private HttpHeaders buildPaginatedResponse(PaginatedResponse<ClientResponse> paginatedProduct) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("X-Total-Count", String.valueOf(paginatedProduct.totalElements()));
         headers.add("X-Total-Pages", String.valueOf(paginatedProduct.totalPages()));

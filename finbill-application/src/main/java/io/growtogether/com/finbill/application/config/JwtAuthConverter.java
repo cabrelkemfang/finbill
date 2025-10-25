@@ -11,10 +11,7 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.stereotype.Component;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -25,11 +22,12 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
     public static final String ROLES = "roles";
     public static final String ROLE = "ROLE_";
     private final ConfigProperties configProperties;
+    private final JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
 
     @Override
     public AbstractAuthenticationToken convert(@NonNull Jwt jwt) {
         Collection<GrantedAuthority> authorities = Stream.concat(
-                new JwtGrantedAuthoritiesConverter().convert(jwt).stream(),
+                jwtGrantedAuthoritiesConverter.convert(jwt).stream(),
                 extractResourceRoles(jwt).stream()
         ).collect(Collectors.toSet());
         return new JwtAuthenticationToken(jwt, authorities);
@@ -38,7 +36,7 @@ public class JwtAuthConverter implements Converter<Jwt, AbstractAuthenticationTo
     private Collection<? extends GrantedAuthority> extractResourceRoles(Jwt jwt) {
         var resourceAccess = new HashMap<>(jwt.getClaim(RESOURCE_ACCESS));
         if (!resourceAccess.containsKey(configProperties.resourceId())) {
-            return Stream.<GrantedAuthority>of().collect(Collectors.toSet());
+            return Set.of();
         }
         var resourceRoles = (Map<String, List<String>>) resourceAccess.get(configProperties.resourceId());
         var roles = resourceRoles.get(ROLES);

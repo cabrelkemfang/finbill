@@ -7,26 +7,34 @@ import io.growtogether.com.finbill.user.domain.model.PhoneNumber;
 import io.growtogether.com.user.application.request.ClientRequest;
 import io.growtogether.com.user.application.response.ClientResponse;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 @Mapper
 public interface ClientDtoMapper {
-    @Mapping(target = "email", source = "email.email")
-    @Mapping(target = "phoneNumber", source = "phoneNumber.number")
-    @Mapping(target = "id", source = "clientId.id")
-    ClientResponse mapToClientResponse(Client client);
 
-    @Mapping(target = "email", source = "email")
-    @Mapping(target = "phoneNumber", source = "phoneNumber")
-    Client mapToClient(ClientRequest clientRequest);
-
-    PaginatedResponse<ClientResponse> mapToPaginatedClientResponse(PaginatedResponse<Client> source);
-
-    default Email stringToEmail(String email) {
-        return new Email(email);
+    default ClientResponse mapToClientResponse(Client client) {
+        var email = client.emailAddress();
+        var phoneNumber = client.contactNumber();
+        var clientStatus = client.currentStatus();
+        return new ClientResponse(
+                client.id().id(),
+                client.firstNameValue(),
+                client.lastNameValue(),
+                email.email(),
+                phoneNumber.number(),
+                clientStatus.toString(),
+                client.creationDate(),
+                client.lastModifiedDate()
+        );
     }
 
-    default PhoneNumber stringToPhoneNumber(String phoneNumber) {
-        return new PhoneNumber(phoneNumber);
+    default Client mapToClient(ClientRequest clientRequest) {
+        return Client.create(
+                clientRequest.getFirstName(),
+                clientRequest.getLastName(),
+                new Email(clientRequest.getEmail()),
+                new PhoneNumber(clientRequest.getPhoneNumber())
+        );
     }
+
+    PaginatedResponse<ClientResponse> mapToPaginatedClientResponse(PaginatedResponse<Client> client);
 }

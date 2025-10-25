@@ -6,14 +6,26 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8085/realms/oauth-growtogether-realm
+          issuer-uri: ${JWT_ISSUER_URI:http://localhost:8085/realms/oauth-growtogether-realm}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   datasource:
-    url: jdbc:mysql://localhost:3306/finbill?useSSL=true&serverTimezone=UTC&&createDatabaseIfNotExist=true
-    username: root
-    password: mysql@237
+    url: ${DB_URL:jdbc:mysql://localhost:3306/finbill?useSSL=true&serverTimezone=UTC&createDatabaseIfNotExist=true}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:mysql@237}
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+    # HikariCP Configuration for production performance
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:20}
+      minimum-idle: ${DB_MIN_IDLE:5}
+      connection-timeout: 30000
+      idle-timeout: 600000
+      max-lifetime: 1800000
+      connection-test-query: SELECT 1
+      pool-name: FinBillHikariPool
+      auto-commit: false
+      leak-detection-threshold: 60000
 
   jpa:
     hibernate:
@@ -24,12 +36,18 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
     open-in-view: false
-    main:
+  main:
       lazy-initialization: true
 jwt:
   auth:
     converter:
-      resource-id: aouth-growtogether-api-client
+      resource-id: ${JWT_RESOURCE_ID:aouth-growtogether-api-client}
+
 server:
   port: 8080
+  compression:
+    enabled: true
+    mime-types: application/json,application/xml,text/html,text/xml,text/plain
+  http2:
+    enabled: true
 
